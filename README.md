@@ -11,14 +11,15 @@ PYTHON FILES:
 
 To-Do List: (to be updated)
 
-- Recorded brain regions of each session
+- Recorded brain regions of each session--Done
 - Plot all neurons of areas of interest (Choice Regions & Task-related regions)
     - Prestimulus time in Go tasks:
-       - Average activity for correct vs. incorrect trials (and compare both with Miss trials)
-       - Variance (across trials) of activity for correct vs. incorrect trials (and compare both with Miss trials)
-       - Normalized firing rate in correct vs. incorrect trials (and compare both with Miss trials)
+       - Average activity for correct vs. incorrect trials (and compare both with Miss trials) --> Debbie
+       - Variance (across trials) of activity for correct vs. incorrect trials (and compare both with Miss trials) --> Laurent
+       - Normalized firing rate in correct vs. incorrect trials (and compare both with Miss trials) --> Tara
 
 - Plot the performance (proportion correct)
+- Explore behavioral data --> Clair
 - Devide contralateral and ipsilateral choices
 - Models we intend to run:
    - GLM
