@@ -6,10 +6,12 @@ Created on Tue Jul 21 09:49:24 2020
 
 @author: BRAIN HUNTERS
 """
-
+import numpy as np
 import basics_steinmetz as bs
 import plots_steinmetz as plts
 from matplotlib import pyplot as plt
+from matplotlib import rcParams 
+
 
 #%% Data retrieval
 alldat = bs.import_dataset()
@@ -31,10 +33,11 @@ dt = dat['bin_size'] # binning at 10 ms
 
 time = bs.get_time(dat)
 
-trials  = 1
-neurons = 1
-spks  = dat['spks'][neurons,trials].mean(axis=(0,1))
+trials  = np.array([1,2])
+neurons = np.array([1,5])
+spks    = dat['spks'][neurons,trials,:].mean(axis=(0,1))
 
+rcParams['figure.figsize'] = [5,5]   
 plt.plot(time,spks.T)
 
 
