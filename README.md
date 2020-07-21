@@ -11,18 +11,19 @@ PYTHON FILES:
 
 To-Do List: (to be updated)
 
-Recorded brain regions of each session
-Plot all neurons of areas of interest (Choice Regions & Task-related regions)
-  - Prestimulus time in Go tasks:
-      - Average activity for correct vs. incorrect trials (and compare both with Miss trials)
-      - Variance (across trials) of activity for correct vs. incorrect trials (and compare both with Miss trials)
-      - Normalized firing rate in correct vs. incorrect trials (and compare both with Miss trials)
+- Recorded brain regions of each session
+- Plot all neurons of areas of interest (Choice Regions & Task-related regions)
+    - Prestimulus time in Go tasks:
+       - Average activity for correct vs. incorrect trials (and compare both with Miss trials)
+       - Variance (across trials) of activity for correct vs. incorrect trials (and compare both with Miss trials)
+       - Normalized firing rate in correct vs. incorrect trials (and compare both with Miss trials)
 
-Plot the performance (proportion correct)
-Models we intend to run:
-  - GLM
-  - Autoregression 
-  - Hidden Markov Model
-  - PCA
+- Plot the performance (proportion correct)
+- Devide contralateral and ipsilateral choices
+- Models we intend to run:
+   - GLM
+   - Autoregression 
+   - Hidden Markov Model
+   - PCA
 
 
