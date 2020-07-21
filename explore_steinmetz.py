@@ -36,15 +36,37 @@ time = bs.get_time(dat)
 
 trials  = np.array([1,2])
 
-visp = dat['brain_area'] == "VISp"
 
 
+spks = dat['spks']
 
 
-spks = dat['spks'][visp,1:100,:].mean(axis=(0,1))
+choice_regions = ['MRN','SCm','SNr','ZI','CP','MOs','MOp','PL']
+within_choice  = np.isin(dat['brain_area'] , choice_regions)
+trials = dat['response'] == 0
 
 
-plt.plot(time,spks.T)
+spks = spks[within_choice,:,:]
+spks = spks[:,trials,:]
+
+spks_av = spks.mean(axis=(0,1))
+
+
+#choice_spks = dat['spks'][within_choice]
+#choice_resp = dat['response'][within_choice]
+#stimulus = dat['contrast_left'] - dat['contrast_right']
+#stimulus = np.sign(stimulus) # right higher - equal - left higher (-1 - 0 - 1)
+#
+#
+#correct_trials = response == stimulus
+#correct_go = correct_trials & (stimulus != 0)
+#correct_no_go = correct_trials & (stimulus == 0)
+#incorrect_go = ~(correct_trials) & (stimulus != 0)
+#incorrect_no_go = ~(correct_trials) & (stimulus == 0)
+#
+#
+#
+plt.plot(time,spks_av.T)
 
 
 
@@ -66,15 +88,6 @@ ax.set(xlabel  = 'time (sec)', ylabel = 'firing rate (Hz)');
 
 #%% Plot correct go versus incorrect go
 ax = plt.subplot(1,5,1)
-response = dat['response'] # right - nogo - left (-1, 0, 1)
-stimulus =  dat['contrast_left'] - dat['contrast_right']
-stimulus = np.sign(stimulus) # right higher - equal - left higher (-1 - 0 - 1)
-
-correct_trials = response == stimulus
-correct_go = correct_trials & (stimulus != 0)
-correct_no_go = correct_trials & (stimulus == 0)
-incorrect_go = ~(correct_trials) & (stimulus != 0)
-incorrect_no_go = ~(correct_trials) & (stimulus == 0)
 
 
 plt.plot(time, 1/dt * dat['spks'][:,correct_go].mean(axis=(0,1))) # correct go response
