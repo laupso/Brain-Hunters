@@ -24,6 +24,7 @@ plts.set_fig_default()
 
 
 #%% Basic plots of single-trial neuron recordings
+rcParams['figure.figsize'] = [5,5]  
 
 # Select just one of the recordings here. 11 is nice because it has some neurons in vis ctx. 
 dat = alldat[11]
@@ -34,10 +35,15 @@ dt = dat['bin_size'] # binning at 10 ms
 time = bs.get_time(dat)
 
 trials  = np.array([1,2])
-neurons = np.array([1,5])
-spks    = dat['spks'][neurons,trials,:].mean(axis=(0,1))
 
-rcParams['figure.figsize'] = [5,5]   
+visp = dat['brain_area'] == "VISp"
+
+
+
+
+spks = dat['spks'][visp,1:100,:].mean(axis=(0,1))
+
+
 plt.plot(time,spks.T)
 
 
@@ -58,5 +64,27 @@ plt.legend(['left resp', 'right resp', 'right stim', 'no right stim'], fontsize=
 ax.set(xlabel  = 'time (sec)', ylabel = 'firing rate (Hz)');
 
 
+#%% Plot correct go versus incorrect go
+ax = plt.subplot(1,5,1)
+response = dat['response'] # right - nogo - left (-1, 0, 1)
+stimulus =  dat['contrast_left'] - dat['contrast_right']
+stimulus = np.sign(stimulus) # right higher - equal - left higher (-1 - 0 - 1)
 
+correct_trials = response == stimulus
+correct_go = correct_trials & (stimulus != 0)
+correct_no_go = correct_trials & (stimulus == 0)
+incorrect_go = ~(correct_trials) & (stimulus != 0)
+incorrect_no_go = ~(correct_trials) & (stimulus == 0)
+
+
+plt.plot(time, 1/dt * dat['spks'][:,correct_go].mean(axis=(0,1))) # correct go response
+plt.plot(time, 1/dt * dat['spks'][:,incorrect_go].mean(axis=(0,1))) # right responses
+# plt.plot(dt * np.arange(NT), 1/dt * dat['spks'][:,vis_right>0].mean(axis=(0,1))) # stimulus on the right
+# plt.plot(dt * np.arange(NT), 1/dt * dat['spks'][:,vis_right==0].mean(axis=(0,1))) # no stimulus on the right
+plt.plot(np.array([0,0]),np.array([3,5]))
+plt.plot(np.array([go_cue[2],go_cue[2]]),np.array([3,5]))
+print(go_cue[2])
+
+plt.legend(['correct go', 'incorrect go', 'Stimulus onset','go cue'], fontsize=12)
+ax.set(xlabel  = 'time (sec)', ylabel = 'firing rate (Hz)');
 
