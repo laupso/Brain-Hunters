@@ -30,3 +30,4 @@ def set_fig_default():
     rcParams['axes.spines.top'] = False
     rcParams['axes.spines.right'] = False
     rcParams['figure.autolayout'] = True
+    #try
