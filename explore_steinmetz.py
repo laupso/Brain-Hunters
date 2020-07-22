@@ -23,55 +23,46 @@ plts.set_fig_default()
 
 
 
-#%% Basic plots of single-trial neuron recordings
+#%% Basic plots of averaged neuron recordings
 rcParams['figure.figsize'] = [5,5]  
 
 # Select just one of the recordings here. 11 is nice because it has some neurons in vis ctx. 
 dat = alldat[11]
-print(dat.keys())
 
-dt = dat['bin_size'] # binning at 10 ms
-
-time = bs.get_time(dat)
-
-trials  = np.array([1,2])
-
-
-
-spks = dat['spks']
+# Store data into separate variables
+dt       = dat['bin_size'] # binning at 10 ms
+time     = bs.get_time(dat)
+stimulus = dat['contrast_left'] - dat['contrast_right']
+stimulus = np.sign(stimulus) 
+spks     = 1/dt * dat['spks']
+response = dat['response']
+go_cue   = dat['gocue']
 
 
+# Logical arrays for selecting trials and brain regions
 choice_regions = ['MRN','SCm','SNr','ZI','CP','MOs','MOp','PL']
-within_choice  = np.isin(dat['brain_area'] , choice_regions)
-trials = dat['response'] == 0
+
+within_choice   = np.isin(dat['brain_area'] , choice_regions)
+correct_trials  = response == stimulus
+correct_go      = correct_trials & (stimulus != 0)
+correct_no_go   = correct_trials & (stimulus == 0)
+incorrect_go    = ~(correct_trials) & (stimulus != 0)
+incorrect_no_go = ~(correct_trials) & (stimulus == 0)
 
 
+# Select neurons and trials and average spike activity
 spks = spks[within_choice,:,:]
-spks = spks[:,trials,:]
+spks = spks[:,correct_go,:]
 
 spks_av = spks.mean(axis=(0,1))
 
 
-#choice_spks = dat['spks'][within_choice]
-#choice_resp = dat['response'][within_choice]
-#stimulus = dat['contrast_left'] - dat['contrast_right']
-#stimulus = np.sign(stimulus) # right higher - equal - left higher (-1 - 0 - 1)
-#
-#
-#correct_trials = response == stimulus
-#correct_go = correct_trials & (stimulus != 0)
-#correct_no_go = correct_trials & (stimulus == 0)
-#incorrect_go = ~(correct_trials) & (stimulus != 0)
-#incorrect_no_go = ~(correct_trials) & (stimulus == 0)
-#
-#
-#
+# Plot
 plt.plot(time,spks_av.T)
 
 
 
 #%% Basic plots of population average
-
 
 ax = plt.subplot(1,5,1)
 response = dat['response'] # right - nogo - left (-1, 0, 1)
@@ -90,13 +81,12 @@ ax.set(xlabel  = 'time (sec)', ylabel = 'firing rate (Hz)');
 ax = plt.subplot(1,5,1)
 
 
-plt.plot(time, 1/dt * dat['spks'][:,correct_go].mean(axis=(0,1))) # correct go response
-plt.plot(time, 1/dt * dat['spks'][:,incorrect_go].mean(axis=(0,1))) # right responses
-# plt.plot(dt * np.arange(NT), 1/dt * dat['spks'][:,vis_right>0].mean(axis=(0,1))) # stimulus on the right
-# plt.plot(dt * np.arange(NT), 1/dt * dat['spks'][:,vis_right==0].mean(axis=(0,1))) # no stimulus on the right
+plt.plot(time, spks[:,correct_go].mean(axis=(0,1))) # correct go response
+plt.plot(time, spks[:,incorrect_go].mean(axis=(0,1))) # right responses
+
 plt.plot(np.array([0,0]),np.array([3,5]))
 plt.plot(np.array([go_cue[2],go_cue[2]]),np.array([3,5]))
-print(go_cue[2])
+
 
 plt.legend(['correct go', 'incorrect go', 'Stimulus onset','go cue'], fontsize=12)
 ax.set(xlabel  = 'time (sec)', ylabel = 'firing rate (Hz)');
