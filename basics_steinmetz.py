@@ -14,6 +14,8 @@ FUNCTIONS:
 Created on Tue Jul 21 12:57:32 2020
 
 @author: BRAIN HUNTERS
+
+##CommentfromClaire
 """
 
 
