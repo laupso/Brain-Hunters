@@ -16,6 +16,7 @@ To-Do List: (to be updated)
     - Prestimulus time in Go tasks:
        - Average activity for correct vs. incorrect trials (and compare both with Miss trials) --> Debbie
        - Variance (across trials) of activity for correct vs. incorrect trials (and compare both with Miss trials) --> Laurent
+       - Calculate Fano Factor for each trial in prestim period
        - Normalized firing rate in correct vs. incorrect trials (and compare both with Miss trials) --> Tara
        - Inter-spike-interval statistics 
 
