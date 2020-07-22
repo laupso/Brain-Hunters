@@ -17,6 +17,7 @@ To-Do List: (to be updated)
        - Average activity for correct vs. incorrect trials (and compare both with Miss trials) --> Debbie
        - Variance (across trials) of activity for correct vs. incorrect trials (and compare both with Miss trials) --> Laurent
        - Normalized firing rate in correct vs. incorrect trials (and compare both with Miss trials) --> Tara
+       - Inter-spike-interval statistics 
 
 - Plot the performance (proportion correct)
 - Explore behavioral data --> Clair
