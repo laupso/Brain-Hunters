@@ -1,0 +1,6 @@
+Here we upload the indices or formulas we use and write a brief description for them:
+
+
+1 - Correct/Wrong Index (Normalized Firing Rate):
+                    (mu(C) - mu(W)) / (mu(C) + mu(W)) * 100
+    where mu(C) and mu(W) are the mean response ofeach neuron in a specific time window in correct and wrong trials, respectively.
