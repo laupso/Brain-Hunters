@@ -19,3 +19,6 @@ dat['trough_to_peak']: measures the width of the action potential waveform for e
 dat['waveform_w']: temporal components of spike waveforms. w@u reconstructs the time by channels action potential shape.
 dat['waveform_u]: spatial components of spike waveforms.
 dat['%X%_passive']: same as above for X = {spks, lfp, pupil, wheel, contrast_left, contrast_right} but for passive trials at the end of the recording when the mouse was no longer engaged and stopped making responses.
+
+
+task_areas = ['VPM','PO','MD','SNr','GPo','POL','LS','ZI','DG','CA3','CAI','SCm','MRN','CP','ACB','BLA','MG','PAG'] 
