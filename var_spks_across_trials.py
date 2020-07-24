@@ -22,7 +22,7 @@ alldat = bs.import_dataset()
 #%% Settings
 task_type  = 'go' # 'go' or 'no_go'
 task_areas = ['VPM','PO','MD','SNr','GPo','POL','LS','ZI','DG','CA3','CAI','SCm','MRN','CP','ACB','BLA','MG','PAG'] 
-sessions   = np.arange(0,2) 
+sessions   = np.arange(0,39) 
 pre_stim   = np.arange(25,45)
 
 
@@ -74,7 +74,7 @@ for s in sessions:
 var_spks = np.vstack([var_spks_corr, var_spks_incorr]) # 1st row = correct trials, 2nd row is incorrect trials
     
 
-#%% Import matplotlib and set defaults
+#%% Figure
 plts.set_fig_default()
 rcParams['figure.figsize'] = [12,5] 
 
