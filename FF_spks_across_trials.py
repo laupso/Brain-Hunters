@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Plot the variance of pre-stimulus firing rate within task-related regions for correct vs. incorrect 
+Plot the Fanno Factor of pre-stimulus firing rate within task-related regions for correct vs. incorrect 
 trials.
 
 Created on Wed Jul 22 16:56:53 2020
@@ -26,11 +26,13 @@ sessions   = np.arange(0,39)
 pre_stim   = np.arange(25,45)
 
 
-#%% Compute variance across trials for correct vs incorrect
-
-var_spks_corr   = np.array([])
-var_spks_incorr = np.array([])
-
+#%% Compute Fano factor for correct vs incorrect
+mean_fr_c = np.array([])
+mean_fr_w = np.array([])
+var_fr_c  = np.array([])
+var_fr_w  = np.array([])
+FF_fr_c   = np.array([])
+FF_fr_w   = np.array([])
 
 for s in sessions:   
 
@@ -47,7 +49,7 @@ for s in sessions:
     go_cue   = dat['gocue']
     areas    = dat['brain_area']
         
-    # Logical arrays for selecting trials and brain regions
+    # Logical arrays for selecting trials 
     correct_trials  = response == stimulus
     if task_type == 'go':
         correct_trials = correct_trials & (stimulus != 0)
@@ -64,26 +66,47 @@ for s in sessions:
         
     spks = spks[isin_task_area,:,:]
     
-    spks_c = spks[:,correct_trials,:].mean(axis=2)
-    spks_i = spks[:,incorrect_trials,:].mean(axis=2)
+    fr_c = spks[:,correct_trials,:].mean(axis=2)
+    fr_w = spks[:,incorrect_trials,:].mean(axis=2) 
     
-    var_spks_corr   = np.hstack([var_spks_corr, np.var(spks_c,axis = 1)])
-    var_spks_incorr = np.hstack([var_spks_incorr, np.var(spks_i,axis = 1)])
+    mean_fr_c = np.hstack([mean_fr_c, fr_c.mean(axis=1)])
+    mean_fr_w = np.hstack([mean_fr_w, fr_w.mean(axis=1)])
     
+    var_fr_c = np.hstack([var_fr_c, fr_c.var(axis=1)])
+    var_fr_w = np.hstack([var_fr_w, fr_w.var(axis=1)])
+    
+    
+FF_fr_c = var_fr_c / mean_fr_c
+FF_fr_w = var_fr_w / mean_fr_w
 
-var_spks = np.vstack([var_spks_corr, var_spks_incorr]) # 1st row = correct trials, 2nd row is incorrect trials
-    
+FF_fr_c[np.isnan(FF_fr_c)] = 0
+FF_fr_w[np.isnan(FF_fr_w)] = 0
+
+mean_fr = np.vstack([mean_fr_c, mean_fr_w])
+var_fr  = np.vstack([var_fr_c, var_fr_w])
+FF_fr   = np.vstack([FF_fr_c, FF_fr_w])
+
+
+FR_summary = {'Mean':mean_fr.T, 'Var':var_fr.T, 'FF': FF_fr.T}
+
+
 
 #%% Figure
 plts.set_fig_default()
 rcParams['figure.figsize'] = [12,5] 
 
+Y = 'FF'
+
 plt.figure()
 ax = plt.subplot(121)
-plt.hist(var_spks.T, range = [0,200])
+plt.hist(FR_summary[Y],range=[0,60])
 plt.legend(['correct','incorrect'])
-ax.set(xlabel = 'FR variance (Hz^2)')
+ax.set(xlabel = 'Fano Factor')
 
 ax = plt.subplot(122)
-plt.boxplot(var_spks.T,labels=['correct','incorrect'])
-ax.set(ylabel = 'FR variance (Hz^2)')
+plt.boxplot(FR_summary[Y],labels=['correct','incorrect'])
+ax.set(ylabel = 'Fano Factor')
+
+
+
+

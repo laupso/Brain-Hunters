@@ -6,10 +6,10 @@ FUNCTIONS:
     import_dataset(data_path)
         imports the complete dataset
         
-    get_time(sessdat)
-        compute time vector for a particular session
-        
+    get_time(dat)
+        computes time vector for a particular session
 
+        
 
 Created on Tue Jul 21 12:57:32 2020
 
@@ -87,3 +87,9 @@ def get_time(sessdat):
     time = dt * np.arange(NT) - 0.5 # substract 500ms so that 0 corresponds to stimulus onset
     
     return time
+
+
+    
+    
+    
+    
