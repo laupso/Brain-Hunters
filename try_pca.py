@@ -9,9 +9,7 @@ Created on Thu Jul 23 19:02:19 2020
 
 import numpy as np
 import basics_steinmetz as bs
-import plots_steinmetz as plts
 from matplotlib import pyplot as plt
-from matplotlib import rcParams 
 from sklearn.decomposition import PCA 
 
 
@@ -19,32 +17,30 @@ from sklearn.decomposition import PCA
 alldat = bs.import_dataset()
 
 dat = alldat[11]
+    
+
+#%% Balance the number of trials
+brain_area = dat['brain_area'][:4]
+
+region_list = ["vis_ctx", "thal", "hipp", "other_ctx", "midbrain", "basal_ganglia", "cortical_subplate", "other"]
+brain_groups = [["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl"], # visual cortex
+                ["CL", "LD", "LGd", "LH", "LP", "MD", "MG", "PO", "POL", "PT", "RT", "SPF", "TH", "VAL", "VPL", "VPM"], # thalamus
+                ["CA", "CA1", "CA2", "CA3", "DG", "SUB", "POST"], # hippocampal
+                ["ACA", "AUD", "COA", "DP", "ILA", "MOp", "MOs", "OLF", "ORB", "ORBm", "PIR", "PL", "SSp", "SSs", "RSP"," TT"], # non-visual cortex
+                ["APN", "IC", "MB", "MRN", "NB", "PAG", "RN", "SCs", "SCm", "SCig", "SCsg", "ZI"], # midbrain
+                ["ACB", "CP", "GPe", "LS", "LSc", "LSr", "MS", "OT", "SNr", "SI"], # basal ganglia 
+                ["BLA", "BMA", "EP", "EPd", "MEA"] # cortical subplate
+                ]
 
 
-#%% print number of trials
-Ntrial = np.ones([39,])
-Ncorrect = np.ones([39,])
-Nincorrect= np.ones([39,])
-mouse = []
+regions_id = len(region_list) * np.ones(len(brain_area)) 
 
-#%%
-for i in range(39):
+for j in range(len(brain_groups)):
+  regions_id[np.isin(brain_area, brain_groups[j])] = j
+  
+regions = np.array(region_list)[regions_id.astype(int)]
 
-    dat = alldat[i]
-    stimulus = dat['contrast_left'] - dat['contrast_right']
-    stimulus = np.sign(stimulus) 
-    response = dat['response'] 
-    
-    correct   = response == stimulus
-    incorrect = ~correct
-    
-    Ntrial[i] = dat['spks'].shape[1]    
-    Ncorrect[i] = np.sum(correct)
-    Nincorrect[i] = np.sum(incorrect)
-    
-    mouse.append(dat['mouse_name'])
-    
-    
+
     
 #%% Settings
 task_type  = 'go' # 'go' or 'no_go'
@@ -77,6 +73,7 @@ model = PCA(n_components = 5).fit(droll.T)
 W = model.components_
 pc_10ms = W @ np.reshape(dat['spks'], (NN,-1))
 pc_10ms = np.reshape(pc_10ms, (5, -1, NT))
+
 
 
 #%% Figure
