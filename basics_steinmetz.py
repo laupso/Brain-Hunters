@@ -6,6 +6,8 @@ FUNCTIONS:
     import_dataset(data_path)
         imports the complete dataset
         
+    collect_spks(...)
+        
     get_time(dat)
         computes time vector for a particular session
 
@@ -67,6 +69,94 @@ def import_dataset(data_path='.'):
     return alldat
 
 
+def collect_spks(alldat, NT=92, balance_correct_incorrect=True, brain_regions = 'all'):
+    """ Collects spiking activity of neurons across all sessions.
+    
+    Args:
+        alldat: ndarray 
+            complete Steinmetz dataset
+            
+        NT: scalar integer
+            number of trials to select (randomly) within each session
+            
+        balance_correct_incorrect: bool
+            if True, equal numbers of correct and incorrect trials are selected. Note that if there 
+            is not enough trials in a particular session, the session is skipped.
+            
+        brain_regions: list
+            list of brain regions to consider. Set to 'all' to consider all brain regions
+            
+    Returns:
+        ndarray
+            spks: (N_neurons x N_trials x N_bins)
+        logical array
+            correct: bool, true for correct trials
+    """
+    
+    import numpy as np
+    import basics_steinmetz as bs
+    
+    # Initialize ndarray
+    spks = np.zeros([30000,NT,250])
+    
+    i0 = 0
+    
+    # Loop through all sessions
+    for dat in alldat:
+        
+        # Select neurons that are active and located within specified brain regions
+        active_neurons  = dat['spks'].sum(axis=2).mean(axis=1) > 1
+        breg = bs.get_brain_region(dat['brain_area'])
+        if not brain_regions == 'all':
+            isin_brain_regions = np.isin(breg, brain_regions)
+        else:
+            isin_brain_regions = np.array(np.ones_like(dat['brain_area'])).astype(bool)
+        
+        spks_ = dat['spks'][active_neurons & isin_brain_regions,:,:]
+        NN = spks_.shape[0]
+        
+        if NN == 0:
+            continue
+               
+        # Divide trials into correct and incorrect trials
+        resp = dat['response']
+        stim = dat['contrast_left'] - dat['contrast_right']
+        stim = np.sign(stim) 
+        correct_   = resp == stim
+        incorrect_ = ~correct_
+
+        min_NT = np.min([np.sum(correct_),np.sum(incorrect_)])
+        if (balance_correct_incorrect) and (2*min_NT < NT):
+            # Don't take this session if number of trials is too small
+            continue
+       
+        # Select trials randomly
+        if balance_correct_incorrect:          
+            NTb = int(np.floor(NT/2))
+            idx1 = np.random.choice(np.array(np.where(correct_)).ravel(), NTb, replace = False)
+            idx2 = np.random.choice(np.array(np.where(incorrect_)).ravel(), NTb, replace = False)
+            idx  = np.concatenate([idx1,idx2])   
+        else:          
+            idx = np.random.choice(spks_.shape[0], NT, replace = False)
+         
+            
+        # Store into ndarray
+        spks[i0:i0+NN,:,:] = spks_[:,idx,:]
+                
+        i0 = i0 + NN
+         
+    spks = spks[:i0,:,:]
+    
+    # Create logical array specifying correct trials
+    if balance_correct_incorrect:
+        correct = np.zeros(NT)
+        correct[:NTb] = 1
+    else:
+        correct = None
+    
+    
+    return spks, correct.astype(bool)
+
 
 
 def get_time(sessdat):
@@ -106,6 +196,7 @@ def get_brain_region(brain_area):
     import numpy as np
     
     region_list = ["vis_ctx", "thal", "hipp", "other_ctx", "midbrain", "basal_ganglia", "cortical_subplate", "other"]
+    
     brain_groups = [["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl"], # visual cortex
                     ["CL", "LD", "LGd", "LH", "LP", "MD", "MG", "PO", "POL", "PT", "RT", "SPF", "TH", "VAL", "VPL", "VPM"], # thalamus
                     ["CA", "CA1", "CA2", "CA3", "DG", "SUB", "POST"], # hippocampal
@@ -116,7 +207,7 @@ def get_brain_region(brain_area):
                     ]
     
     
-    regions_id = len(region_list) * np.ones(len(brain_area)) 
+    regions_id = (len(region_list)-1) * np.ones(len(brain_area)) 
     
     for j in range(len(brain_groups)):
       regions_id[np.isin(brain_area, brain_groups[j])] = j
