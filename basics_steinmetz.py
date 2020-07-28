@@ -88,8 +88,46 @@ def get_time(sessdat):
     
     return time
 
-
     
+
+def get_brain_region(brain_area):
+    """ Returns the brain region where brain_area is located.
+        Possible brain regions: ["vis ctx", "thal", "hipp", "other ctx", "midbrain", 
+        "basal ganglia", "cortical subplate", "other"]
+    
+    Args:
+        brain_area: ndarray of brain areas
+            names of brain area
+    
+    Returns:
+        region: ndarray of brain areas
+    """
+    
+    import numpy as np
+    
+    region_list = ["vis_ctx", "thal", "hipp", "other_ctx", "midbrain", "basal_ganglia", "cortical_subplate", "other"]
+    brain_groups = [["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl"], # visual cortex
+                    ["CL", "LD", "LGd", "LH", "LP", "MD", "MG", "PO", "POL", "PT", "RT", "SPF", "TH", "VAL", "VPL", "VPM"], # thalamus
+                    ["CA", "CA1", "CA2", "CA3", "DG", "SUB", "POST"], # hippocampal
+                    ["ACA", "AUD", "COA", "DP", "ILA", "MOp", "MOs", "OLF", "ORB", "ORBm", "PIR", "PL", "SSp", "SSs", "RSP"," TT"], # non-visual cortex
+                    ["APN", "IC", "MB", "MRN", "NB", "PAG", "RN", "SCs", "SCm", "SCig", "SCsg", "ZI"], # midbrain
+                    ["ACB", "CP", "GPe", "LS", "LSc", "LSr", "MS", "OT", "SNr", "SI"], # basal ganglia 
+                    ["BLA", "BMA", "EP", "EPd", "MEA"] # cortical subplate
+                    ]
+    
+    
+    regions_id = len(region_list) * np.ones(len(brain_area)) 
+    
+    for j in range(len(brain_groups)):
+      regions_id[np.isin(brain_area, brain_groups[j])] = j
+      
+    regions = np.array(region_list)[regions_id.astype(int)]
+        
+    return regions
+        
+        
+        
+   
     
     
     
