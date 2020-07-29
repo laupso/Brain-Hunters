@@ -94,7 +94,6 @@ def collect_spks(alldat, NT=92, balance_correct_incorrect=True, brain_regions = 
     """
     
     import numpy as np
-    import basics_steinmetz as bs
     
     # Initialize ndarray
     spks = np.zeros([30000,NT,250])
@@ -106,7 +105,7 @@ def collect_spks(alldat, NT=92, balance_correct_incorrect=True, brain_regions = 
         
         # Select neurons that are active and located within specified brain regions
         active_neurons  = dat['spks'].sum(axis=2).mean(axis=1) > 1
-        breg = bs.get_brain_region(dat['brain_area'])
+        breg = get_brain_region(dat['brain_area'])
         if not brain_regions == 'all':
             isin_brain_regions = np.isin(breg, brain_regions)
         else:
@@ -119,10 +118,7 @@ def collect_spks(alldat, NT=92, balance_correct_incorrect=True, brain_regions = 
             continue
                
         # Divide trials into correct and incorrect trials
-        resp = dat['response']
-        stim = dat['contrast_left'] - dat['contrast_right']
-        stim = np.sign(stim) 
-        correct_   = resp == stim
+        correct_   = iscorrect(dat)
         incorrect_ = ~correct_
 
         min_NT = np.min([np.sum(correct_),np.sum(incorrect_)])
@@ -159,11 +155,11 @@ def collect_spks(alldat, NT=92, balance_correct_incorrect=True, brain_regions = 
 
 
 
-def get_time(sessdat):
+def get_time(dat):
     """ Returns the time vector for the dataset of a specific session
     
     Args:
-        sessdat: ndarray
+        dat: ndarray
             session dataset
             
     Returns:
@@ -172,13 +168,26 @@ def get_time(sessdat):
     """
     import numpy as np
     
-    dt = sessdat['bin_size'] # binning 
-    NT = sessdat['spks'].shape[-1]
+    dt = dat['bin_size'] # binning 
+    NT = dat['spks'].shape[-1]
     time = dt * np.arange(NT) - 0.5 # substract 500ms so that 0 corresponds to stimulus onset
     
     return time
 
     
+def iscorrect(dat):
+    """ returns an array of bool that are True for correct trials
+    
+    """
+    import numpy as np
+    
+    resp = dat['response']
+    stim = dat['contrast_left'] - dat['contrast_right']
+    stim = np.sign(stim) 
+    
+    return resp == stim
+
+
 
 def get_brain_region(brain_area):
     """ Returns the brain region where brain_area is located.

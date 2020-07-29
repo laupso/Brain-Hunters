@@ -7,7 +7,7 @@ Created on Mon Jul 27 15:21:16 2020
 """
 
 
-def fit_pca_model(spks,n_comp):
+def fit_pca_model(spks,n_comp=None):
     
     import numpy as np
     from sklearn.decomposition import PCA 
@@ -22,7 +22,7 @@ def fit_pca_model(spks,n_comp):
 
     
     
-def compute_pca(spks, model, n_comp):
+def compute_pca(spks, model):
     
     import numpy as np
     
@@ -30,6 +30,7 @@ def compute_pca(spks, model, n_comp):
     NB = spks.shape[-1] # Number of time bins
     
     W = model.components_
+    n_comp = model.n_components_
     pc = W @ np.reshape(spks, (NN,-1))
     pc = np.reshape(pc, (n_comp, -1, NB))
     
@@ -48,12 +49,15 @@ def plot_explained_variance(model, threshold = 0.9):
     plt.figure(figsize = (7,6))
     ax = plt.subplot(111)
     plt.plot(np.cumsum(model.explained_variance_ratio_))
+    plt.plot(model.explained_variance_ratio_)
+    
+    plt.legend(("Cumulative","Explained Variance"))
     
     if len(ncomp_thrsh) > 0:
         plt.hlines(threshold, 0, ncomp_thrsh[0], color = 'k', linestyle = '--')
         plt.vlines(ncomp_thrsh[0], 0, threshold, color = 'k', linestyle = '--')
     
-    ax.set(xlabel = 'Number of components', ylabel = 'Cumulative Explained Variance [%]')
+    ax.set(xlabel = 'Number of components', ylabel = 'Explained Variance Ratio')
     plt.grid(True)
     
     
