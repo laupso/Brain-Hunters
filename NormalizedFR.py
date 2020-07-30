@@ -59,6 +59,25 @@ for session in range(len(alldat)):
         tot_cor_go_av=np.concatenate((tot_cor_go_av,spks_in_region_cor_av),axis=None)
         tot_incor_go_av=np.concatenate((tot_incor_go_av,spks_in_region_incor_av),axis=None)
         
+#delete zero-activity neurons--
+sum_go_av=tot_cor_go_av+tot_incor_go_av
+rem_idx=np.array(np.where(sum_go_av==0))
+sum_go_act=np.delete(sum_go_av,rem_idx)
+tot_cor_go_act=np.delete(tot_cor_go_av,rem_idx)
+tot_incor_go_act=np.delete(tot_incor_go_av,rem_idx)
+
+#(Normalized) firing rate for each neuron
+normFR_cor_go=tot_cor_go_act#/sum_go_act*100 #=>add it for normalization
+normFR_incor_go=tot_incor_go_act#/sum_go_act*100 #=>add it for normalization
+#Stack them together
+stak_cor_incor_normFR=np.vstack([normFR_cor_go,normFR_incor_go])
+# stak_cor_incor_FR=np.vstack([tot_cor_go_av,tot_incor_go_av]) #including zero-activity neurons
+#Average neural activity and std
+normFR_cor_go_av=normFR_cor_go.mean()
+normFR_incor_go_av=normFR_incor_go.mean()
+normFR_cor_go_sem=stats.sem(normFR_cor_go)
+normFR_incor_go_sem=stats.sem(normFR_incor_go) 
+    
 #calculate Correct/Wron Index
 cwi=(tot_cor_go_av-tot_incor_go_av)/(tot_cor_go_av+tot_incor_go_av)*100
 cwi=np.reshape(cwi,(-1,20))
@@ -68,10 +87,11 @@ cwi_sem=stats.sem(cwi,axis=0)
 
 #%% Check the significancy of CWI against popmean=zero
 
-ttest,pvalue=stats.ttest_1samp(cwi,0) #should 2sample be used?
-pvalue_binary=pvalue<.05  #true if significant
+ttest0,pvalue0=stats.ttest_1samp(cwi,0) 
+pvalue_binary=pvalue0<.05  #true if significant
 pvalue_binary=1*pvalue_binary # 1 if significant
 
+ttest,pvalue=stats.ttest_rel(normFR_cor_go,normFR_incor_go)  
 
  #%% Plot CWI in correct vs incorrect trials   
 rcParams['figure.figsize'] = [5,5]  
@@ -82,4 +102,32 @@ plt.plot(prestim_time,np.zeros(cwi_av.shape),label='Zero-Mean line')
 plt.scatter(prestim_time,pvalue_binary,c='green',label='Significant points')
 
 plt.legend()
+plt.show()
+
+#%%add bar graph
+
+plts.set_fig_default()
+rcParams['figure.figsize'] = [14,5] 
+
+plt.figure()
+ax=plt.subplot(121)
+
+plt.hist(stak_cor_incor_normFR.T)
+# plt.title('brain area: %s ' %task_areas[area])
+plt.legend(['correct','incorrect'])
+plt.xlabel('FR')
+plt.ylabel('# of neurons')
+
+#Plot firing rates
+ax=plt.subplot(122)
+plt.bar([2,3],[normFR_cor_go_av,normFR_incor_go_av],yerr=[normFR_cor_go_sem,normFR_incor_go_sem])
+
+#plot properties
+plt.ylabel('Average Firing Rate')
+plt.xticks([2,3], ('correct trials', 'incorrect trials'))
+plt.yticks(np.arange(0,5,.5))
+plt.ylim(0,5)
+plt.title('p-value= %f ' %pvalue)
+
+    
 plt.show()
