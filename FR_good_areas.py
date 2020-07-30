@@ -47,7 +47,7 @@ tot_ff_cor_go=[]
 tot_ff_incor_go=[]
 
 # task_areas=['VPM','PO','MD','SNr','GPo','POL','LS','ZI','DG','CA3','CAI','SCm','MRN','CP','ACB','BLA','MG','PAG'] 
-task_areas_good=['PO','MD']
+task_areas_good=["APN", "IC", "MB", "MRN", "NB", "PAG", "RN", "SCs", "SCm", "SCig", "SCsg", "ZI"]
 
 for area in range(len(task_areas_good)):
         
@@ -79,8 +79,8 @@ for area in range(len(task_areas_good)):
             spks_in_region_incor_var=spks_in_region_incor_av_tim.var(axis=(1))
             #the total variables
             total_spikes_list.append(spks_in_region) #returns all the sessions of interest
-            tot_ff_cor_go=np.hstack([tot_ff_cor_go,(spks_in_region_cor_var/spks_in_region_cor_av)])
-            tot_ff_incor_go=np.hstack([tot_ff_incor_go,(spks_in_region_incor_var/spks_in_region_cor_av)])
+            tot_ff_cor_go=np.hstack([tot_ff_cor_go,(spks_in_region_cor_var)])#/spks_in_region_cor_av)])
+            tot_ff_incor_go=np.hstack([tot_ff_incor_go,(spks_in_region_incor_var)])#/spks_in_region_cor_av)])
             tot_cor_go_av=np.concatenate((tot_cor_go_av,spks_in_region_cor_av),axis=None) #average FR over all trials and time bins
             tot_incor_go_av=np.concatenate((tot_incor_go_av,spks_in_region_incor_av),axis=None)
             
@@ -98,13 +98,13 @@ for area in range(len(task_areas_good)):
 rcParams['figure.figsize'] = [10,10] 
 fig, ax = plt.subplots()
 
-plt.scatter(tot_ff_cor_go_act,tot_cor_go_act,c='blue',label='correct')
-plt.scatter(tot_ff_incor_go_act,tot_incor_go_act,c='red',label='incorrect')
+plt.scatter(tot_ff_cor_go_act,tot_cor_go_act,label='correct')
+plt.scatter(tot_ff_incor_go_act,tot_incor_go_act,label='incorrect')
 
 # plt.scatter(tot_ff_cor_go_act**.5,tot_cor_go_act**2,c='blue',label='correct')
 # plt.scatter(tot_ff_incor_go_act**.5,tot_incor_go_act**2,c='red',label='incorrect')
 
-ax.set(xlabel='FF',ylabel='FR',title='Scatter Plot-FR vs. var') #,xlim=[0,500],ylim=[0,50])
+ax.set(xlabel='Variance',ylabel='FR',title='Scatter Plot-FR vs. Variance',xlim=[0,200],ylim=[0,20])
 
 
 plt.legend()
