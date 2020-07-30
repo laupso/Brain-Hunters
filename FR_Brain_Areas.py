@@ -35,6 +35,8 @@ tot_cor_go_av=[]
 tot_incor_go_av=[]
 cwi=[]
 task_areas=['VPM','PO','MD','SNr','GPo','POL','LS','ZI','DG','CA3','CAI','SCm','MRN','CP','ACB','BLA','MG','PAG'] 
+ttest=np.zeros(len(task_areas))
+pvalue=np.zeros(len(task_areas))
 
 for area in range(len(task_areas)):
         
@@ -75,7 +77,10 @@ for area in range(len(task_areas)):
     normFR_cor_go_av=normFR_cor_go.mean()
     normFR_incor_go_av=normFR_incor_go.mean()
     normFR_cor_go_sem=stats.sem(normFR_cor_go)
-    normFR_incor_go_sem=stats.sem(normFR_incor_go)                
+    normFR_incor_go_sem=stats.sem(normFR_incor_go) 
+
+    #Calculate p-vales
+    ttest[area],pvalue[area]=stats.ttest_rel(tot_cor_go_act,tot_incor_go_act)         
             
     #Histogram of the average of all neurons        
     plts.set_fig_default()
@@ -85,6 +90,7 @@ for area in range(len(task_areas)):
     ax=plt.subplot(121)
 
     plt.hist(stak_cor_incor_normFR.T)
+    plt.title('brain area: %s ' %task_areas[area])
     plt.legend(['correct','incorrect'])
     plt.xlabel('FR')
     plt.ylabel('# of neurons')
@@ -95,13 +101,10 @@ for area in range(len(task_areas)):
     
     #plot properties
     plt.ylabel('Average Firing Rate')
-    plt.title('Activity in correct vs. incorrect trials in prestimulus period')
     plt.xticks([2,3], ('correct trials', 'incorrect trials'))
     plt.yticks(np.arange(0,5,.5))
     plt.ylim(0,5)
-    plt.title('brain area: %s ' %task_areas[area])
+    plt.title('p-value= %f ' %pvalue[area])
 
         
 plt.show()
-
-#should average over all session for each brain area

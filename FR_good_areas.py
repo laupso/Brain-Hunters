@@ -79,15 +79,15 @@ for area in range(len(task_areas_good)):
             spks_in_region_incor_var=spks_in_region_incor_av_tim.var(axis=(1))
             #the total variables
             total_spikes_list.append(spks_in_region) #returns all the sessions of interest
-            tot_ff_cor_go=np.hstack([tot_ff_cor_go,(spks_in_region_cor_var)])#/spks_in_region_cor_av)])
-            tot_ff_incor_go=np.hstack([tot_ff_incor_go,(spks_in_region_incor_var)])#/spks_in_region_cor_av)])
+            tot_ff_cor_go=np.hstack([tot_ff_cor_go,(spks_in_region_cor_var/spks_in_region_cor_av)])
+            tot_ff_incor_go=np.hstack([tot_ff_incor_go,(spks_in_region_incor_var/spks_in_region_cor_av)])
             tot_cor_go_av=np.concatenate((tot_cor_go_av,spks_in_region_cor_av),axis=None) #average FR over all trials and time bins
             tot_incor_go_av=np.concatenate((tot_incor_go_av,spks_in_region_incor_av),axis=None)
             
         
     #delete zero-activity neurons
     sum_go_av=tot_cor_go_av+tot_incor_go_av
-    rem_idx=np.array(np.where(tot_cor_go_av<=3) or np.where(tot_incor_go_av<=3))
+    rem_idx=np.array(np.where(tot_cor_go_av<=1) or np.where(tot_incor_go_av<=1))
     sum_go_act=np.delete(sum_go_av,rem_idx)
     tot_cor_go_act=np.delete(tot_cor_go_av,rem_idx)
     tot_incor_go_act=np.delete(tot_incor_go_av,rem_idx)
@@ -101,7 +101,10 @@ fig, ax = plt.subplots()
 plt.scatter(tot_ff_cor_go_act,tot_cor_go_act,c='blue',label='correct')
 plt.scatter(tot_ff_incor_go_act,tot_incor_go_act,c='red',label='incorrect')
 
-ax.set(xlabel='var',ylabel='FR',title='Scatter Plot-FR vs. var',xlim=[0,100],ylim=[0,10])
+# plt.scatter(tot_ff_cor_go_act**.5,tot_cor_go_act**2,c='blue',label='correct')
+# plt.scatter(tot_ff_incor_go_act**.5,tot_incor_go_act**2,c='red',label='incorrect')
+
+ax.set(xlabel='FF',ylabel='FR',title='Scatter Plot-FR vs. var') #,xlim=[0,500],ylim=[0,50])
 
 
 plt.legend()
